@@ -1,0 +1,50 @@
+html,
+body {
+  margin: 0;
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+}
+
+header {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  width: 100%;
+  text-align: center;
+  justify-items: center;
+  align-items: center;
+}
+
+.logo {
+  grid-column: 2;
+  max-height: 4rem;
+}
+
+main {
+  background-color: #e4e4e4;
+}
+
+.container {
+  padding: 1em;
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}
+
+.content {
+  width: 100%;
+  max-width: 400px;
+}
+
+.content img {
+  width: 100%;
+}
+
+.post {
+  background-color: #ffffff;
+  border-bottom: 1px solid #000000;
+}
+
+.padding {
+  padding: 0.5em;
+  margin: 0;
+}
