@@ -1,110 +1,84 @@
 
-const contentElement = document.getElementById("content");
-const loginElement = document.getElementById("login");
-let currentUser;
-
-let posts = [];
-for (let i = 1; i <= 32; i++) {
-  const post = {
-    title: "Awesome Hamster " + i,
-    url: "img/hamster" + i + ".jpg",
-    likes: [],
-  };
-  posts.push(post);
-}
-// console.log(JSON.stringify(posts));
-
-function displayPosts() {
-  contentElement.innerHTML = "";
-
-  for (let post of posts) {
-    const postElement = createPostElement(post);
-    contentElement.appendChild(postElement);
+  function newElement() {
+    //get the input
+    let inputValue = document.getElementById("toDo").value;
+  
+    //create a list of the task from the input
+    let li = document.createElement("li");
+    li.textContent = inputValue;
+  
+    //close button
+    let span = document.createElement("span");
+    span.className = "close";
+    span.appendChild(document.createTextNode("\u00D7"));
+    //\u00D7=x
+    li.appendChild(span);//add the button to task
+   
+    //new task
+    document.getElementById("listUl").appendChild(li);
+   // reset input field
+    document.getElementById("toDo").value = "";
+  
+    // gone when x is clicked
+    span.onclick = function() {
+      li.style.display = "none";
+    };
+  
+    updateLocalStorage();
   }
-}
-
-function createPostElement(post) {
-  const articleElement = document.createElement("article");
-  articleElement.classList.add("post");
-
-  const titleElement = document.createElement("h4");
-  titleElement.classList.add("padding");
-  titleElement.innerText = post.title;
-  articleElement.appendChild(titleElement);
-
-  const imageElement = document.createElement("img");
-  imageElement.src = post.url;
-  articleElement.appendChild(imageElement);
-
-  const infoElement = document.createElement("div");
-  infoElement.classList.add("padding");
-  articleElement.appendChild(infoElement);
-
-  const likeButtonElement = document.createElement("button");
-  if (post.likes.indexOf(currentUser) === -1) {
-    likeButtonElement.innerText = "🤍";
-  } else {
-    likeButtonElement.innerText = "❤️";
-  }
-  // likeButtonElement.innerText =
-  //   post.likes.indexOf(currentUser) === -1 ? "🤍" : "❤️";
-  if (currentUser) {
-    likeButtonElement.disabled = false;
-  } else {
-    likeButtonElement.disabled = true;
-  }
-  // likeButtonElement.disabled = currentUser === undefined;
-
-  likeButtonElement.addEventListener("click", () => {
-    const userIndex = post.likes.indexOf(currentUser);
-    if (userIndex === -1) {
-      post.likes.push(currentUser);
-    } else {
-      post.likes.splice(userIndex, 1);
-    }
-    // displayPosts();
-    const updatedPost = createPostElement(post);
-    articleElement.replaceWith(updatedPost);
-  });
-  infoElement.appendChild(likeButtonElement);
-
-  const likeTextElement = document.createElement("span");
-  likeTextElement.innerText = post.likes.length + " likes";
-  infoElement.appendChild(likeTextElement);
-
-  return articleElement;
-}
-
-function checkLogin() {
-  loginElement.innerHTML = "";
-
-  if (currentUser) {
-    loginElement.innerText = "Hi, " + currentUser;
-
-    const logoutButton = document.createElement("button");
-    logoutButton.innerText = "Logout";
-    loginElement.appendChild(logoutButton);
-    logoutButton.addEventListener("click", () => {
-      currentUser = undefined;
-      checkLogin();
-      displayPosts();
-    });
-  } else {
-    const inputElement = document.createElement("input");
-    inputElement.placeholder = "Username";
-    loginElement.appendChild(inputElement);
-
-    const loginButton = document.createElement("button");
-    loginButton.innerText = "Login";
-    loginElement.appendChild(loginButton);
-    loginButton.addEventListener("click", () => {
-      if (inputElement.value.length > 0) {
-        currentUser = inputElement.value;
-        checkLogin();
-        displayPosts();
+  
+  function updateLocalStorage() {
+    let listItems = document.querySelectorAll("#listUl li");
+    let tasks = [];
+  
+    // find and store the non checked tasks in the task array
+    listItems.forEach(function(item, index) {
+      if (!item.classList.contains("checked")) {
+        tasks.push(item.textContent);
       }
     });
+  //store tasks in local storage
+    localStorage.setItem("tasks", JSON.stringify(tasks));
   }
-}
-
-
+  
+  function restoreFromLocalStorage() {
+    let storedTasks = localStorage.getItem("tasks");
+    if (storedTasks) {
+      let tasks = JSON.parse(storedTasks);
+  
+       tasks.forEach(function(taskText) {
+        let li = document.createElement("li");
+        li.textContent = taskText;
+  
+        let span = document.createElement("span");
+        span.className = "close";
+        span.appendChild(document.createTextNode("\u00D7"));
+        li.appendChild(span);
+        document.getElementById("listUl").appendChild(li);
+        //hide tasks when x is clicked
+        span.onclick = function() {
+          li.style.display = "none";
+        };
+      });
+    }
+  }
+  
+  document.getElementById("listUl").addEventListener("click", function(ev) {
+    if (ev.target.tagName === "SPAN") {
+      ev.target.parentElement.style.display = "none";
+    } else if (ev.target.tagName === "LI") {
+      ev.target.classList.toggle("checked");
+    }
+  
+    updateLocalStorage();
+  });
+  
+  //restore tasks from local storage when page is loaded
+  document.addEventListener("DOMContentLoaded", function() {
+    restoreFromLocalStorage();
+  });
+  
+  
+  
+  
+  
